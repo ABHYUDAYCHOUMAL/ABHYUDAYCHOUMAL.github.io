@@ -253,8 +253,8 @@ nav ul li a {
 # Hero
 --------------------------------------------------------------*/
 #hero {
-  background: url("../../img/home.webp") repeat scroll center center/cover;
-  height: 100vh;
+  background: url("../../img/img.jpg") repeat scroll center center/cover;
+  height: 110vh;
   width: 100%;
 }
 
