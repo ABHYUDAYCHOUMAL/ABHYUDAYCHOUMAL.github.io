@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import Navbar from "./components/Navbar";
 import Landing from "./components/Landing";
 import About from "./components/About";
@@ -8,6 +9,9 @@ import Contact from "./components/Contact";
 import SocialIcons from "./components/SocialIcons";
 import Footer from "./components/Footer";
 
+const TechStack = lazy(() => import("./components/TechStack"));
+const Avatar = lazy(() => import("./components/Avatar"));
+
 function App() {
   return (
     <>
@@ -16,9 +20,15 @@ function App() {
       <main>
         <Landing />
         <About />
+        <Suspense fallback={null}>
+          <Avatar />
+        </Suspense>
         <WhatIDo />
         <Career />
         <Work />
+        <Suspense fallback={null}>
+          <TechStack />
+        </Suspense>
         <Contact />
       </main>
       <Footer />
