@@ -36,6 +36,7 @@
   width: 100% !important;
   height: 100% !important;
   cursor: grab;
+  background: var(--bg-1);
 }
 
 .techstack__canvas-wrap::after {

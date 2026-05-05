@@ -36,7 +36,7 @@ function AvatarModel({ url }: { url: string }) {
   });
 
   return (
-    <group ref={group} position={[0, -1.45, 0]}>
+    <group ref={group} position={[0, -1.55, 0]}>
       <primitive object={scene} scale={1.0} />
     </group>
   );
@@ -64,8 +64,12 @@ const AvatarCanvas = () => {
       <Canvas
         shadows
         dpr={[1, 1.6]}
-        camera={{ position: [0, 0.05, 0.95], fov: 24 }}
+        camera={{ position: [0, 0.4, 4.2], fov: 14, near: 0.1, far: 100 }}
         gl={{ alpha: true, antialias: true }}
+        onCreated={({ gl, camera }) => {
+          gl.toneMappingExposure = 1.1;
+          camera.lookAt(0, 0.1, 0);
+        }}
       >
         <ambientLight intensity={0.55} />
         <directionalLight

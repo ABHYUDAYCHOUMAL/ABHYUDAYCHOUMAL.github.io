@@ -93,18 +93,19 @@ function Sphere({ scale, material, isActive }: SphereProps) {
     const impulse = vec
       .copy(api.current.translation())
       .normalize()
-      .multiplyScalar(-1)
-      .multiply(new THREE.Vector3(40 * d * scale, 90 * d * scale, 40 * d * scale));
+      .multiply(
+        new THREE.Vector3(-50 * d * scale, -150 * d * scale, -50 * d * scale)
+      );
     api.current.applyImpulse(impulse, true);
   });
 
   const r = THREE.MathUtils.randFloatSpread;
   return (
     <RigidBody
-      linearDamping={0.7}
-      angularDamping={0.2}
+      linearDamping={0.75}
+      angularDamping={0.15}
       friction={0.2}
-      position={[r(20), r(20) - 5, r(20) - 8]}
+      position={[r(20), r(20) - 25, r(20) - 10]}
       ref={api}
       colliders={false}
     >
@@ -115,6 +116,7 @@ function Sphere({ scale, material, isActive }: SphereProps) {
         scale={scale}
         geometry={sphereGeometry}
         material={material}
+        rotation={[0.3, 1, 1]}
       />
     </RigidBody>
   );
@@ -205,10 +207,12 @@ const TechStack = () => {
         <div className="techstack__canvas-wrap" aria-hidden>
           <Canvas
             shadows
-            gl={{ alpha: false, antialias: true }}
-            camera={{ position: [0, 0, 20], fov: 32, near: 1, far: 100 }}
+            gl={{ alpha: true, stencil: false, depth: false, antialias: false }}
+            camera={{ position: [0, 0, 20], fov: 32.5, near: 1, far: 100 }}
             dpr={[1, 1.6]}
-            onCreated={({ gl }) => gl.setClearColor("#0c1018", 1)}
+            onCreated={({ gl }) => {
+              gl.toneMappingExposure = 1.5;
+            }}
           >
             <ambientLight intensity={0.7} />
             <spotLight
