@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
+import { Environment } from "@react-three/drei";
 import {
   BallCollider,
   Physics,
@@ -9,66 +10,121 @@ import {
 } from "@react-three/rapier";
 import "./styles/TechStack.css";
 
-type Tech = { name: string; color: string };
+type Tech = { name: string; color: string; slug: string };
 
+// `slug` is the simple-icons identifier used to fetch the SVG logo.
+// See https://simpleicons.org for the master list.
 const TECHS: Tech[] = [
-  { name: "Python", color: "#3776AB" },
-  { name: "TypeScript", color: "#3178C6" },
-  { name: "FastAPI", color: "#009688" },
-  { name: "Node.js", color: "#339933" },
-  { name: "React", color: "#61DAFB" },
-  { name: "Docker", color: "#2496ED" },
-  { name: "Redis", color: "#DC382D" },
-  { name: "Neo4j", color: "#018BFF" },
-  { name: "MongoDB", color: "#47A248" },
-  { name: "AWS", color: "#FF9900" },
-  { name: "Swift", color: "#F05138" },
-  { name: ".NET", color: "#512BD4" },
+  // Languages
+  { name: "Python", color: "#3776AB", slug: "python" },
+  { name: "TypeScript", color: "#3178C6", slug: "typescript" },
+  { name: "JavaScript", color: "#F7DF1E", slug: "javascript" },
+  { name: "Java", color: "#ED8B00", slug: "openjdk" },
+  { name: "Swift", color: "#F05138", slug: "swift" },
+  { name: "Solidity", color: "#363636", slug: "solidity" },
+  // Frameworks
+  { name: "FastAPI", color: "#009688", slug: "fastapi" },
+  { name: "Node.js", color: "#339933", slug: "nodedotjs" },
+  { name: "React", color: "#61DAFB", slug: "react" },
+  { name: "Django", color: "#092E20", slug: "django" },
+  { name: ".NET", color: "#512BD4", slug: "dotnet" },
+  // Data
+  { name: "MongoDB", color: "#47A248", slug: "mongodb" },
+  { name: "MySQL", color: "#4479A1", slug: "mysql" },
+  { name: "Redis", color: "#DC382D", slug: "redis" },
+  { name: "Neo4j", color: "#018BFF", slug: "neo4j" },
+  // Infrastructure
+  { name: "Docker", color: "#2496ED", slug: "docker" },
+  { name: "Git", color: "#F05032", slug: "git" },
+  { name: "AWS", color: "#FF9900", slug: "amazonwebservices" },
+  { name: "Firebase", color: "#FFCA28", slug: "firebase" },
+  { name: "Android", color: "#3DDC84", slug: "android" },
 ];
 
-/** Generate a circular Three texture with the tech name + colored fill. */
+/**
+ * Generate a Moncy-style sphere texture: pure white background with
+ * TWO copies of the logo + brand name at horizontal 25% and 75%.
+ *
+ * The two-copy layout exists because a Three.js sphere wraps a 2D
+ * texture cylindrically — a single centered logo disappears when the
+ * ball rotates 180°. Two copies 180° apart guarantee at least one is
+ * always visible no matter how the ball spins.
+ */
 function makeTechTexture(tech: Tech): THREE.Texture {
-  const size = 512;
+  // 1024×512 — wider than tall so the two-up layout has room
+  const w = 1024;
+  const h = 512;
   const canvas = document.createElement("canvas");
-  canvas.width = canvas.height = size;
+  canvas.width = w;
+  canvas.height = h;
   const ctx = canvas.getContext("2d")!;
 
-  // Background — radial gradient with tech color
-  const grad = ctx.createRadialGradient(size / 2, size / 2, size * 0.1, size / 2, size / 2, size * 0.55);
-  grad.addColorStop(0, lighten(tech.color, 18));
-  grad.addColorStop(1, tech.color);
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, size, size);
+  function paintBase() {
+    // Pure white background — any warm tint will come from the HDR
+    // environment lighting, not the texture
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, w, h);
 
-  // Subtle vignette
-  const vignette = ctx.createRadialGradient(size / 2, size / 2, size * 0.4, size / 2, size / 2, size * 0.7);
-  vignette.addColorStop(0, "rgba(0,0,0,0)");
-  vignette.addColorStop(1, "rgba(0,0,0,0.45)");
-  ctx.fillStyle = vignette;
-  ctx.fillRect(0, 0, size, size);
+    // Very subtle neutral vignette to add a hint of edge depth
+    const vignette = ctx.createRadialGradient(w / 2, h / 2, w * 0.2, w / 2, h / 2, w * 0.55);
+    vignette.addColorStop(0, "rgba(0,0,0,0)");
+    vignette.addColorStop(1, "rgba(20,20,30,0.06)");
+    ctx.fillStyle = vignette;
+    ctx.fillRect(0, 0, w, h);
+  }
 
-  // Tech name label
-  ctx.fillStyle = "rgba(255,255,255,0.96)";
-  ctx.font = "600 64px 'Space Grotesk', 'Inter', system-ui, sans-serif";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(tech.name, size / 2, size / 2);
+  function paintBrand(img: HTMLImageElement | null) {
+    paintBase();
+
+    const positions = [w * 0.25, w * 0.75];
+    const logoCenterY = h * 0.42;
+    const textY = h * 0.72;
+
+    ctx.fillStyle = tech.color;
+    ctx.font = "700 56px 'Space Grotesk', 'Inter', system-ui, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    for (const cx of positions) {
+      if (img) {
+        // Fit the logo into a target box while preserving its aspect ratio
+        const target = h * 0.42;
+        const nw = img.naturalWidth || img.width || 24;
+        const nh = img.naturalHeight || img.height || 24;
+        const scale = target / Math.max(nw, nh);
+        const lw = nw * scale;
+        const lh = nh * scale;
+        ctx.drawImage(img, cx - lw / 2, logoCenterY - lh / 2, lw, lh);
+        ctx.fillText(tech.name, cx, textY);
+      } else {
+        // No image — center the text vertically as the only branding
+        ctx.fillText(tech.name, cx, h * 0.5);
+      }
+    }
+  }
+
+  paintBrand(null);
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = 4;
+
+  // Async: load brand logo from simple-icons CDN, redraw with logo on load
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.onload = () => {
+    paintBrand(img);
+    texture.needsUpdate = true;
+  };
+  img.onerror = () => {
+    // Network/CORS failure — text-only fallback already drawn
+  };
+  img.src = `https://cdn.simpleicons.org/${tech.slug}`;
+
   return texture;
 }
 
-function lighten(hex: string, amount: number): string {
-  const c = hex.replace("#", "");
-  const r = Math.min(255, parseInt(c.slice(0, 2), 16) + amount);
-  const g = Math.min(255, parseInt(c.slice(2, 4), 16) + amount);
-  const b = Math.min(255, parseInt(c.slice(4, 6), 16) + amount);
-  return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
-}
-
-const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
+const sphereGeometry = new THREE.SphereGeometry(1, 24, 24);
 
 const SPHERE_COUNT = 24;
 const SCALE_OPTIONS = [0.7, 0.85, 1.0, 1.1];
@@ -94,7 +150,7 @@ function Sphere({ scale, material, isActive }: SphereProps) {
       .copy(api.current.translation())
       .normalize()
       .multiply(
-        new THREE.Vector3(-50 * d * scale, -150 * d * scale, -50 * d * scale)
+        new THREE.Vector3(-35 * d * scale, -120 * d * scale, -35 * d * scale)
       );
     api.current.applyImpulse(impulse, true);
   });
@@ -105,14 +161,12 @@ function Sphere({ scale, material, isActive }: SphereProps) {
       linearDamping={0.75}
       angularDamping={0.15}
       friction={0.2}
-      position={[r(20), r(20) - 25, r(20) - 10]}
+      position={[r(30), r(20) - 25, r(20) - 10]}
       ref={api}
       colliders={false}
     >
       <BallCollider args={[scale]} />
       <mesh
-        castShadow
-        receiveShadow
         scale={scale}
         geometry={sphereGeometry}
         material={material}
@@ -168,15 +222,17 @@ const TechStack = () => {
   const materials = useMemo(() => {
     return TECHS.map((tech) => {
       const texture = makeTechTexture(tech);
+      // Match Moncy's recipe: fully matte body, half-metal so the HDR env
+      // map gives soft reflections, white self-emission so the texture
+      // glows gently, thin clearcoat for a hint of premium finish.
       return new THREE.MeshPhysicalMaterial({
         map: texture,
-        metalness: 0.55,
-        roughness: 0.35,
-        clearcoat: 0.55,
-        clearcoatRoughness: 0.3,
-        emissive: new THREE.Color(tech.color),
+        emissive: "#ffffff",
         emissiveMap: texture,
-        emissiveIntensity: 0.28,
+        emissiveIntensity: 0.3,
+        metalness: 0.5,
+        roughness: 1,
+        clearcoat: 0.1,
       });
     });
   }, []);
@@ -191,41 +247,25 @@ const TechStack = () => {
   );
 
   return (
-    <section className="techstack section" id="techstack" ref={sectionRef}>
-      <div className="container techstack__inner">
-        <header className="techstack__header">
-          <span className="eyebrow">Tech stack</span>
-          <h2 className="section-title">
-            The tools I <em>reach for first.</em>
-          </h2>
-          <p className="techstack__lead">
-            Hover the canvas — the balls react to your cursor. Everything you
-            see is a tool I've shipped real production code with.
-          </p>
-        </header>
-
-        <div className="techstack__canvas-wrap" aria-hidden>
-          <Canvas
-            shadows
-            gl={{ alpha: true, stencil: false, depth: false, antialias: false }}
-            camera={{ position: [0, 0, 20], fov: 32.5, near: 1, far: 100 }}
-            dpr={[1, 1.6]}
-            onCreated={({ gl }) => {
-              gl.toneMappingExposure = 1.5;
-            }}
-          >
-            <ambientLight intensity={0.7} />
+    <section className="techstack" id="techstack" ref={sectionRef}>
+      <div className="techstack__stage">
+        <Canvas
+          gl={{ alpha: true, stencil: false, antialias: false, powerPreference: "high-performance" }}
+          camera={{ position: [0, 0, 20], fov: 32.5, near: 1, far: 100 }}
+          dpr={[1, 1.5]}
+          onCreated={({ gl }) => {
+            gl.toneMappingExposure = 1.4;
+          }}
+        >
+            <ambientLight intensity={1} />
             <spotLight
-              position={[20, 18, 22]}
+              position={[20, 20, 25]}
               penumbra={1}
-              angle={0.3}
+              angle={0.2}
               color="#ffffff"
-              intensity={1.2}
-              castShadow
-              shadow-mapSize={[1024, 1024]}
+              intensity={1}
             />
-            <directionalLight position={[-8, -4, 10]} intensity={0.6} color="#7dd3fc" />
-            <directionalLight position={[8, -2, -6]} intensity={0.35} color="#f4a261" />
+            <directionalLight position={[0, 5, -4]} intensity={2} />
 
             <Physics gravity={[0, 0, 0]}>
               <Pointer isActive={isActive} />
@@ -238,10 +278,22 @@ const TechStack = () => {
                 />
               ))}
             </Physics>
+
+            <Environment preset="city" environmentIntensity={0.5} />
           </Canvas>
+
+          <div className="techstack__title-overlay">
+            <span className="eyebrow">Tech stack</span>
+            <h2 className="techstack__title">
+              The tools I <em>reach for first.</em>
+            </h2>
+            <p className="techstack__lead">
+              Hover the canvas — the balls react to your cursor.
+            </p>
+          </div>
         </div>
 
-        <ul className="techstack__legend">
+        <ul className="techstack__legend container">
           {TECHS.map((t) => (
             <li key={t.name}>
               <span
@@ -253,7 +305,6 @@ const TechStack = () => {
             </li>
           ))}
         </ul>
-      </div>
     </section>
   );
 };

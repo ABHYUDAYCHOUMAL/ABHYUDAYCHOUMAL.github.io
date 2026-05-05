@@ -62,22 +62,16 @@ const AvatarCanvas = () => {
   return (
     <div className="avatar-canvas" aria-hidden>
       <Canvas
-        shadows
-        dpr={[1, 1.6]}
+        dpr={[1, 1.5]}
         camera={{ position: [0, 0.4, 4.2], fov: 14, near: 0.1, far: 100 }}
-        gl={{ alpha: true, antialias: true }}
+        gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
         onCreated={({ gl, camera }) => {
           gl.toneMappingExposure = 1.1;
           camera.lookAt(0, 0.1, 0);
         }}
       >
-        <ambientLight intensity={0.55} />
-        <directionalLight
-          position={[2.5, 3, 2]}
-          intensity={1.2}
-          castShadow
-          shadow-mapSize={[1024, 1024]}
-        />
+        <ambientLight intensity={0.7} />
+        <directionalLight position={[2.5, 3, 2]} intensity={1.2} />
         <directionalLight
           position={[-3, 1.5, 2]}
           intensity={0.45}

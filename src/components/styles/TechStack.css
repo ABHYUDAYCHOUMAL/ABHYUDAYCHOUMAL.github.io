@@ -1,59 +1,97 @@
 .techstack {
   position: relative;
+  margin-block: clamp(4rem, 8vh, 7rem);
 }
 
-.techstack__inner {
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
-}
-
-.techstack__header {
-  max-width: 720px;
-}
-
-.techstack__lead {
-  font-size: 1.05rem;
-  color: var(--text-2);
-  max-width: 600px;
-  margin-top: -1rem;
-}
-
-.techstack__canvas-wrap {
+/* Full-bleed stage that escapes the page container */
+.techstack__stage {
   position: relative;
-  height: clamp(420px, 60vh, 640px);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background:
-    radial-gradient(ellipse 60% 80% at 50% 50%, rgba(125, 211, 252, 0.05), transparent 70%),
-    var(--bg-1);
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  height: clamp(560px, 88vh, 920px);
   overflow: hidden;
   isolation: isolate;
+  background:
+    radial-gradient(circle 380px at 18% 22%, rgba(190, 130, 240, 0.18), transparent 60%),
+    radial-gradient(circle 420px at 84% 78%, rgba(244, 162, 97, 0.10), transparent 65%),
+    radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255, 200, 220, 0.06), transparent 75%),
+    var(--bg-0);
 }
 
-.techstack__canvas-wrap canvas {
-  display: block;
-  width: 100% !important;
-  height: 100% !important;
-  cursor: grab;
-  background: var(--bg-1);
-}
-
-.techstack__canvas-wrap::after {
+.techstack__stage::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
+  z-index: 1;
   background:
-    radial-gradient(ellipse 90% 70% at 50% 110%, rgba(0, 0, 0, 0.55), transparent 60%);
+    linear-gradient(180deg, var(--bg-0), transparent 18%, transparent 82%, var(--bg-0));
 }
 
+.techstack__stage canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  cursor: grab;
+  background: transparent;
+  position: relative;
+  z-index: 2;
+}
+
+/* Heading sits BEHIND the canvas — balls fly in front of it */
+.techstack__title-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding-inline: 1.5rem;
+  pointer-events: none;
+  text-align: center;
+}
+
+.techstack__title-overlay .eyebrow {
+  pointer-events: auto;
+}
+
+.techstack__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 8vw, 5.5rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.025em;
+  color: var(--text-1);
+  text-shadow:
+    0 6px 30px rgba(0, 0, 0, 0.55),
+    0 1px 4px rgba(0, 0, 0, 0.4);
+  max-width: 18ch;
+}
+
+.techstack__title em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.techstack__lead {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+  margin-top: 0.4rem;
+}
+
+/* Legend below stage, sits in normal page container */
 .techstack__legend {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 0.55rem 1.4rem;
-  padding: 0;
+  padding-inline: clamp(1.25rem, 3vw, 2.5rem);
+  margin-top: 2.5rem;
 }
 
 .techstack__legend li {
