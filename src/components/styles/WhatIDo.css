@@ -1,0 +1,149 @@
+.whatido__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.whatido__header {
+  max-width: 720px;
+}
+
+.whatido__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.4rem;
+}
+
+.bucket {
+  position: relative;
+  padding: 2.2rem 2rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 60%),
+    var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  overflow: hidden;
+  transition:
+    transform 0.45s var(--easing),
+    border-color 0.4s var(--easing),
+    box-shadow 0.4s var(--easing),
+    background 0.4s var(--easing);
+}
+
+.bucket::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    140deg,
+    transparent 30%,
+    var(--accent-soft) 50%,
+    transparent 70%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s var(--easing);
+  pointer-events: none;
+}
+
+.bucket:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-2);
+}
+
+.bucket:hover::before {
+  opacity: 1;
+}
+
+.bucket__index {
+  font-size: 0.74rem;
+  letter-spacing: 0.18em;
+  color: var(--text-3);
+}
+
+.bucket__head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+}
+
+.bucket__title {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  letter-spacing: -0.02em;
+  color: var(--text-1);
+}
+
+.bucket__tagline {
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+
+.bucket__desc {
+  font-size: 0.98rem;
+  line-height: 1.65;
+  color: var(--text-2);
+}
+
+.bucket__skills {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: auto;
+}
+
+.bucket__skills li {
+  padding: 0.42rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.02em;
+  color: var(--text-2);
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  transition: color 0.25s var(--easing), border-color 0.25s var(--easing),
+    background 0.25s var(--easing);
+}
+
+.bucket:hover .bucket__skills li {
+  border-color: var(--border-strong);
+}
+
+.bucket__skills li:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.bucket__corner {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-top: 1px solid var(--accent);
+  border-right: 1px solid var(--accent);
+  opacity: 0.35;
+}
+
+@media (max-width: 860px) {
+  .whatido__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bucket {
+    padding: 1.8rem 1.5rem;
+  }
+}
