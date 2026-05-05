@@ -1,6 +1,13 @@
 import { MdArrowOutward } from "react-icons/md";
+import { FaApple, FaGithub } from "react-icons/fa6";
 import { projects } from "../data/site";
 import "./styles/Work.css";
+
+type LinkDef = {
+  label: string;
+  href: string;
+  Icon: React.ComponentType;
+};
 
 const Work = () => {
   return (
@@ -15,8 +22,14 @@ const Work = () => {
 
         <div className="work__grid">
           {projects.map((p, i) => {
-            const linkHref = p.link ?? p.repo;
-            const linkLabel = p.link ? "Visit" : p.repo ? "GitHub" : null;
+            const links: LinkDef[] = [];
+            if (p.link)
+              links.push({ label: "Visit", href: p.link, Icon: MdArrowOutward });
+            if (p.appStore)
+              links.push({ label: "App Store", href: p.appStore, Icon: FaApple });
+            if (p.repo)
+              links.push({ label: "GitHub", href: p.repo, Icon: FaGithub });
+
             return (
               <article className="work-card" key={p.name}>
                 <div className="work-card__index mono">
@@ -33,16 +46,21 @@ const Work = () => {
                   ))}
                 </ul>
 
-                {linkHref && (
-                  <a
-                    className="work-card__link"
-                    href={linkHref}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <span>{linkLabel}</span>
-                    <MdArrowOutward />
-                  </a>
+                {links.length > 0 && (
+                  <div className="work-card__links">
+                    {links.map(({ label, href, Icon }) => (
+                      <a
+                        key={label}
+                        className="work-card__link"
+                        href={href}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <span>{label}</span>
+                        <Icon />
+                      </a>
+                    ))}
+                  </div>
                 )}
 
                 <span className="work-card__shine" aria-hidden />

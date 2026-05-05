@@ -86,7 +86,7 @@ const Contact = () => {
                   ["GitHub", social.github],
                   ["LinkedIn", social.linkedin],
                   ["LeetCode", social.leetcode],
-                  ["Twitter / X", social.twitter],
+                  ["X", social.twitter],
                 ].map(([label, href]) => (
                   <li key={label}>
                     <a href={href} target="_blank" rel="noreferrer">

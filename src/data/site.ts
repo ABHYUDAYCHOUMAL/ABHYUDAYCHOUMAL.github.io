@@ -11,7 +11,7 @@ export const profile = {
   title: "Backend Developer & Architect",
   taglineWords: ["Architect", "Builder", "Shipper", "Engineer"],
   location: "Ratangarh (Churu), Rajasthan, India",
-  email: "abhyudaychoumal8@gmail.com",
+  email: "abhyudaychoumal@gmail.com",
   altEmail: "cs20b1001@iiitr.ac.in",
   phone: "+91 85628 34487",
   resumeUrl: "/Resume_Abhyuday_Choumal.pdf",
@@ -27,8 +27,8 @@ export const bio = {
 export const social = {
   github: "https://github.com/ABHYUDAYCHOUMAL",
   linkedin: "https://www.linkedin.com/in/abhyuday-choumal-97aa121aa",
-  twitter: "https://twitter.com/Abhyuda39197919",
-  instagram: "https://www.instagram.com/abhyudaychoumal8/",
+  twitter: "https://x.com/Abhyuday0806",
+  instagram: "https://www.instagram.com/cat_the__chad/",
   leetcode: "https://leetcode.com/u/abhyudaychoumal/",
 } as const;
 
@@ -87,6 +87,7 @@ export type Project = {
   description: string;
   tech: string[];
   link?: string;
+  appStore?: string;
   repo?: string;
   image?: string;
 };
@@ -108,11 +109,13 @@ export const projects: Project[] = [
     tech: [".NET", "Angular", "OAuth", "Webhooks", "REST"],
   },
   {
-    name: "Koyozo iOS Platform",
-    category: "Mobile · Swift",
+    name: "Koyozo",
+    category: "Mobile · Swift · Gaming",
     description:
-      "Production iOS gaming platform with GameController framework, SwiftUI/MVVM, and two-tier NSCache+disk caching with background prefetch — 70% faster loads, 80% fewer API calls. Led Android parity port.",
+      "Production iOS gaming platform with GameController framework, SwiftUI/MVVM, and two-tier NSCache+disk caching with background prefetch — 70% faster loads, 80% fewer API calls. Led Android parity port for 10,000+ console users.",
     tech: ["Swift", "SwiftUI", "MVVM", "Android"],
+    link: "https://koyozo.com/",
+    appStore: "https://apps.apple.com/in/app/koyozo-club/id6760929097",
   },
   {
     name: "Examy",

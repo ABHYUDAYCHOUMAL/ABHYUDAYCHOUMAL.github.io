@@ -12,7 +12,7 @@ const ICONS = [
   { href: social.github, label: "GitHub", Icon: FaGithub },
   { href: social.linkedin, label: "LinkedIn", Icon: FaLinkedinIn },
   { href: social.leetcode, label: "LeetCode", Icon: SiLeetcode },
-  { href: social.twitter, label: "Twitter / X", Icon: FaXTwitter },
+  { href: social.twitter, label: "X (Twitter)", Icon: FaXTwitter },
   { href: social.instagram, label: "Instagram", Icon: FaInstagram },
 ];
 
