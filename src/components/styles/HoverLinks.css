@@ -1,0 +1,32 @@
+.hover-link {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  line-height: 1.1;
+}
+
+.hover-link__top,
+.hover-link__bottom {
+  display: block;
+  transition: transform 0.45s var(--easing);
+}
+
+.hover-link__bottom {
+  position: absolute;
+  inset: 0;
+  color: var(--accent);
+  transform: translateY(100%);
+}
+
+a:hover .hover-link__top,
+button:hover .hover-link__top,
+.hover-link:hover .hover-link__top {
+  transform: translateY(-110%);
+}
+
+a:hover .hover-link__bottom,
+button:hover .hover-link__bottom,
+.hover-link:hover .hover-link__bottom {
+  transform: translateY(0);
+}
