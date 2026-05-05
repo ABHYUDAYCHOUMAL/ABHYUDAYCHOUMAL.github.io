@@ -99,7 +99,7 @@ export const projects: Project[] = [
     description:
       "Architected the backend for an AI-driven market exploration platform — FastAPI, Supabase, LMDB, Redis, RabbitMQ, Neo4j — with agentic RAG and multi-model LLM orchestration over a domain-driven monolith.",
     tech: ["FastAPI", "Neo4j", "RAG", "LLM", "Redis", "RabbitMQ"],
-    link: "https://quantedquery.com",
+    link: "https://query.quanted.com/",
   },
   {
     name: "Aztute Integrations",
