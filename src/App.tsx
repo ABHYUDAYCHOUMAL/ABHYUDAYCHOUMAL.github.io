@@ -8,6 +8,7 @@ import Work from "./components/Work";
 import Contact from "./components/Contact";
 import SocialIcons from "./components/SocialIcons";
 import Footer from "./components/Footer";
+import CanvasErrorBoundary from "./components/CanvasErrorBoundary";
 
 const TechStack = lazy(() => import("./components/TechStack"));
 const Avatar = lazy(() => import("./components/Avatar"));
@@ -20,15 +21,19 @@ function App() {
       <main>
         <Landing />
         <About />
-        <Suspense fallback={null}>
-          <Avatar />
-        </Suspense>
+        <CanvasErrorBoundary>
+          <Suspense fallback={null}>
+            <Avatar />
+          </Suspense>
+        </CanvasErrorBoundary>
         <WhatIDo />
         <Career />
         <Work />
-        <Suspense fallback={null}>
-          <TechStack />
-        </Suspense>
+        <CanvasErrorBoundary>
+          <Suspense fallback={null}>
+            <TechStack />
+          </Suspense>
+        </CanvasErrorBoundary>
         <Contact />
       </main>
       <Footer />

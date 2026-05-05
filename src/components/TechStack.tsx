@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { EffectComposer, N8AO } from "@react-three/postprocessing";
 import {
   BallCollider,
   Physics,
@@ -169,13 +168,13 @@ const TechStack = () => {
       const texture = makeTechTexture(tech);
       return new THREE.MeshPhysicalMaterial({
         map: texture,
-        metalness: 0.4,
-        roughness: 0.45,
-        clearcoat: 0.35,
-        clearcoatRoughness: 0.4,
+        metalness: 0.55,
+        roughness: 0.35,
+        clearcoat: 0.55,
+        clearcoatRoughness: 0.3,
         emissive: new THREE.Color(tech.color),
         emissiveMap: texture,
-        emissiveIntensity: 0.18,
+        emissiveIntensity: 0.28,
       });
     });
   }, []);
@@ -234,10 +233,6 @@ const TechStack = () => {
                 />
               ))}
             </Physics>
-
-            <EffectComposer enableNormalPass={false}>
-              <N8AO color="#0c1018" aoRadius={2} intensity={0.9} />
-            </EffectComposer>
           </Canvas>
         </div>
 
