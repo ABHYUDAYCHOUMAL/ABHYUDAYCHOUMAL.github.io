@@ -25,20 +25,24 @@ const Landing = () => {
         </h1>
 
         <div className="landing__role">
-          <span className="landing__role-prefix">// I am a</span>
+          <span className="landing__role-prefix">I'm</span>
           <span className="landing__role-words">
-            {profile.taglineWords.map((word, i) => (
-              <span
-                key={word}
-                className={
-                  "landing__role-word" +
-                  (i === wordIndex ? " landing__role-word--active" : "")
-                }
-                aria-hidden={i !== wordIndex}
-              >
-                {word}.
-              </span>
-            ))}
+            {profile.taglineWords.map((word, i) => {
+              const article = /^[aeiou]/i.test(word) ? "an " : "a ";
+              return (
+                <span
+                  key={word}
+                  className={
+                    "landing__role-word" +
+                    (i === wordIndex ? " landing__role-word--active" : "")
+                  }
+                  aria-hidden={i !== wordIndex}
+                >
+                  {article}
+                  <strong>{word}</strong>.
+                </span>
+              );
+            })}
           </span>
         </div>
 

@@ -107,6 +107,7 @@ export const projects: Project[] = [
     description:
       "Three mission-critical integrations into a live Angular/.NET/SQL Server workflow platform — DocuSign, eFax, and Microsoft Teams Calendar with bidirectional sync, OAuth lifecycle, and real-time conflict resolution.",
     tech: [".NET", "Angular", "OAuth", "Webhooks", "REST"],
+    link: "https://app.aztute.com/",
   },
   {
     name: "Koyozo",

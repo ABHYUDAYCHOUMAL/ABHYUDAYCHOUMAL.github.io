@@ -86,14 +86,16 @@
   display: inline-flex;
   align-items: baseline;
   gap: 0.6rem;
-  font-family: var(--font-mono);
-  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-family: var(--font-body);
+  font-size: clamp(1.05rem, 2vw, 1.4rem);
   color: var(--text-2);
   margin-top: 0.5rem;
 }
 
 .landing__role-prefix {
   color: var(--text-3);
+  font-style: italic;
+  letter-spacing: -0.005em;
 }
 
 .landing__role-words {
@@ -108,10 +110,15 @@
 .landing__role-word {
   position: absolute;
   inset: 0;
-  color: var(--accent);
+  color: var(--text-3);
   opacity: 0;
   transform: translateY(60%);
   transition: opacity 0.5s var(--easing), transform 0.5s var(--easing);
+}
+
+.landing__role-word strong {
+  font-weight: 600;
+  color: var(--accent);
 }
 
 .landing__role-word--active {
