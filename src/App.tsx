@@ -11,7 +11,6 @@ import Footer from "./components/Footer";
 import CanvasErrorBoundary from "./components/CanvasErrorBoundary";
 
 const TechStack = lazy(() => import("./components/TechStack"));
-const Avatar = lazy(() => import("./components/Avatar"));
 
 function App() {
   return (
@@ -21,11 +20,6 @@ function App() {
       <main>
         <Landing />
         <About />
-        <CanvasErrorBoundary>
-          <Suspense fallback={null}>
-            <Avatar />
-          </Suspense>
-        </CanvasErrorBoundary>
         <WhatIDo />
         <Career />
         <Work />

@@ -205,9 +205,10 @@ const TechStack = () => {
         <div className="techstack__canvas-wrap" aria-hidden>
           <Canvas
             shadows
-            gl={{ alpha: true, antialias: true }}
+            gl={{ alpha: false, antialias: true }}
             camera={{ position: [0, 0, 20], fov: 32, near: 1, far: 100 }}
             dpr={[1, 1.6]}
+            onCreated={({ gl }) => gl.setClearColor("#0c1018", 1)}
           >
             <ambientLight intensity={0.7} />
             <spotLight
