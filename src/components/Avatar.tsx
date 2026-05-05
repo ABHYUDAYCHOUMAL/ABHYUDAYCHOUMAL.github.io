@@ -7,9 +7,10 @@ import "./styles/Avatar.css";
 
 // Ready Player Me serves halfbody/fullbody .glb avatars at:
 // https://models.readyplayer.me/<id>.glb
-// Append query params to optimize: ?meshLod=1&textureSizeLimit=1024
+// Append query params to optimize — RPM-specific, skip for local files.
 function buildOptimizedUrl(url: string): string {
   if (!url) return url;
+  if (!url.includes("readyplayer.me")) return url;
   if (url.includes("?")) return url;
   return `${url}?meshLod=1&textureSizeLimit=1024&morphTargets=ARKit`;
 }
