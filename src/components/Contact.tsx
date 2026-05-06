@@ -48,11 +48,13 @@ const Contact = () => {
     <section className="contact section" id="contact">
       <div className="container contact__inner">
         <header className="contact__header">
-          <span className="eyebrow">Contact</span>
-          <h2 className="section-title">
+          <span className="eyebrow" data-reveal="fade">
+            Contact
+          </span>
+          <h2 className="section-title" data-reveal="title">
             Let's build something that <em>actually ships.</em>
           </h2>
-          <p className="contact__lead">
+          <p className="contact__lead" data-reveal="text">
             I'm open to backend / architecture work, interesting integrations,
             and conversations with people who care about systems that hold up.
           </p>

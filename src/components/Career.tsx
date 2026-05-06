@@ -1,20 +1,57 @@
+import { useEffect, useRef } from "react";
+import { gsap, prefersReducedMotion } from "../lib/gsap";
 import { career } from "../data/site";
 import "./styles/Career.css";
 
 const Career = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Vertical timeline guide grows alongside the user's scroll position
+  // through the section. Cards and dots animate independently via the
+  // per-element data-reveal system below, so each item enters as it
+  // personally crosses the viewport instead of all firing at once.
+  useEffect(() => {
+    if (prefersReducedMotion() || !sectionRef.current) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        ".career__timeline-line",
+        { scaleY: 0 },
+        {
+          scaleY: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 70%",
+            end: "bottom 75%",
+            scrub: 0.5,
+          },
+        }
+      );
+    }, sectionRef);
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section className="career section" id="career">
+    <section className="career section" id="career" ref={sectionRef}>
       <div className="container career__inner">
         <header className="career__header">
-          <span className="eyebrow">Experience</span>
-          <h2 className="section-title">
+          <span className="eyebrow" data-reveal="fade">
+            Experience
+          </span>
+          <h2 className="section-title" data-reveal="title">
             Where I've <em>shipped.</em>
           </h2>
         </header>
 
         <ol className="career__timeline">
+          <span className="career__timeline-line" aria-hidden />
           {career.map((entry, i) => (
-            <li key={i} className="career__item">
+            <li
+              key={i}
+              className="career__item"
+              data-reveal="fade"
+              data-reveal-from="right"
+            >
               <span className="career__dot" aria-hidden />
 
               <div className="career__card">

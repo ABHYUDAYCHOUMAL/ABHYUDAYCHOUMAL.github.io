@@ -6,13 +6,15 @@ const WhatIDo = () => {
     <section className="whatido section" id="what">
       <div className="container whatido__inner">
         <header className="whatido__header">
-          <span className="eyebrow">What I do</span>
-          <h2 className="section-title">
+          <span className="eyebrow" data-reveal="fade">
+            What I do
+          </span>
+          <h2 className="section-title" data-reveal="title">
             Two ways I show up in <em>code.</em>
           </h2>
         </header>
 
-        <div className="whatido__grid">
+        <div className="whatido__grid" data-reveal="stagger">
           {skillBuckets.map((bucket, i) => (
             <article className="bucket" key={bucket.title}>
               <span className="bucket__index mono">0{i + 1}</span>

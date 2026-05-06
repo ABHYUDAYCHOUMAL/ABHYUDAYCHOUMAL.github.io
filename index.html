@@ -37,6 +37,16 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Preload the hero 3D model so the network fetch overlaps with
+         the Three.js bundle, instead of waiting until the canvas mounts. -->
+    <link
+      rel="preload"
+      as="fetch"
+      href="/avatar.glb"
+      type="model/gltf-binary"
+      crossorigin
+    />
   </head>
   <body>
     <div id="root"></div>

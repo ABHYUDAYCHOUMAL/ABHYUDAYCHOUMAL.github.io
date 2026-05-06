@@ -1,0 +1,76 @@
+/* Hide the OS cursor only when the custom one is mounted (i.e. not on
+   touch devices and not under prefers-reduced-motion). Inputs and
+   contenteditable retain their native carets so typing still feels right. */
+body.has-custom-cursor,
+body.has-custom-cursor * {
+  cursor: none;
+}
+
+body.has-custom-cursor input,
+body.has-custom-cursor textarea,
+body.has-custom-cursor [contenteditable],
+body.has-custom-cursor select {
+  cursor: text;
+}
+
+body.has-custom-cursor input[type="submit"],
+body.has-custom-cursor input[type="button"],
+body.has-custom-cursor select {
+  cursor: none;
+}
+
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  will-change: transform;
+  transition: opacity 0.25s var(--easing);
+}
+
+.cursor__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  mix-blend-mode: difference;
+}
+
+.cursor__ring {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  transition:
+    width 0.35s var(--easing),
+    height 0.35s var(--easing),
+    opacity 0.25s var(--easing),
+    background 0.3s var(--easing),
+    border-color 0.3s var(--easing);
+}
+
+.cursor__ring--hover {
+  width: 56px;
+  height: 56px;
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.cursor__ring--hide {
+  opacity: 0;
+}
+
+/* On any pointer device that doesn't show a precise cursor, hide the
+   custom cursor entirely so it never gets stuck. */
+@media (hover: none), (pointer: coarse) {
+  .cursor {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor {
+    display: none;
+  }
+}

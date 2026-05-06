@@ -12,6 +12,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.4rem;
+  perspective: 1200px;
 }
 
 .work-card {
@@ -24,16 +25,21 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
+  transform-style: preserve-3d;
   transition:
-    transform 0.4s var(--easing),
+    transform 0.45s var(--easing),
     border-color 0.4s var(--easing),
     box-shadow 0.4s var(--easing);
 }
 
 .work-card:hover {
-  transform: translateY(-4px);
+  /* Subtle 3D lift — translateZ pulls the card forward in the perspective
+     space so it visually pops out of the grid plane. */
+  transform: translateY(-6px) translateZ(8px) rotateX(2deg);
   border-color: var(--border-strong);
-  box-shadow: var(--shadow-2);
+  box-shadow:
+    0 20px 50px -20px rgba(0, 0, 0, 0.6),
+    0 0 0 1px var(--accent-soft) inset;
 }
 
 .work-card__index {

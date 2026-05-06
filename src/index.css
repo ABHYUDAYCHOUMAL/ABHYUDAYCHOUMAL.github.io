@@ -193,6 +193,23 @@ p {
 }
 
 /* ==========================================================================
+   Scroll-reveal helpers
+   ========================================================================== */
+
+/* Lines emitted by SplitText need to clip their children so chars/words
+   can rise from below the baseline without overflowing the layout. */
+.split-line {
+  overflow: hidden;
+  display: block;
+}
+
+/* Hide reveal-targeted elements until their tween initializes. Prevents
+   a flash of fully-rendered content before the animation starts. */
+[data-reveal]:not([data-reveal-hooked="1"]) {
+  visibility: hidden;
+}
+
+/* ==========================================================================
    Reduced motion
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
@@ -203,5 +220,11 @@ p {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /* When animations are disabled, reveal targets must still be visible. */
+  [data-reveal] {
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 }

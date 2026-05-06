@@ -17,8 +17,7 @@
   gap: 1.2rem;
 }
 
-.career__timeline::before {
-  content: "";
+.career__timeline-line {
   position: absolute;
   left: 0.55rem;
   top: 0.6rem;
@@ -28,9 +27,11 @@
     to bottom,
     transparent,
     var(--border-strong) 8%,
+    var(--accent-soft) 50%,
     var(--border-strong) 92%,
     transparent
   );
+  transform-origin: top;
 }
 
 .career__item {

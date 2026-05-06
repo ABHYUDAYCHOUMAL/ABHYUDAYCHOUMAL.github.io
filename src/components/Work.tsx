@@ -14,13 +14,15 @@ const Work = () => {
     <section className="work section" id="work">
       <div className="container work__inner">
         <header className="work__header">
-          <span className="eyebrow">Selected work</span>
-          <h2 className="section-title">
+          <span className="eyebrow" data-reveal="fade">
+            Selected work
+          </span>
+          <h2 className="section-title" data-reveal="title">
             Things I've <em>built &amp; shipped.</em>
           </h2>
         </header>
 
-        <div className="work__grid">
+        <div className="work__grid" data-reveal="stagger">
           {projects.map((p, i) => {
             const links: LinkDef[] = [];
             if (p.link)

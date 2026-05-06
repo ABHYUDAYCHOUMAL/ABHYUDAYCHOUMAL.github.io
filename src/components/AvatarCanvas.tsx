@@ -1,15 +1,16 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment, useGLTF } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
-import { env } from "../data/site";
+import "./styles/AvatarCanvas.css";
 
-function buildOptimizedUrl(url: string): string {
-  if (!url) return url;
-  if (!url.includes("readyplayer.me")) return url;
-  if (url.includes("?")) return url;
-  return `${url}?meshLod=1&textureSizeLimit=1024&morphTargets=ARKit`;
-}
+// Point drei's GLTF loader at the Draco WASM decoder we ship in /public/draco
+// so it can transparently load Draco-compressed GLBs.
+useGLTF.setDecoderPath("/draco/");
+
+const MODEL_URL = "/avatar.glb";
+
+useGLTF.preload(MODEL_URL);
 
 function AvatarModel({ url }: { url: string }) {
   const { scene } = useGLTF(url);
@@ -36,38 +37,35 @@ function AvatarModel({ url }: { url: string }) {
   });
 
   return (
-    <group ref={group} position={[0, -1.55, 0]}>
-      <primitive object={scene} scale={1.0} />
+    <group ref={group} position={[0, -1.5, 0]}>
+      <primitive object={scene} scale={1.15} />
     </group>
   );
 }
 
 const AvatarCanvas = () => {
-  const url = env.rpmAvatarUrl;
   const [hasGl, setHasGl] = useState(true);
 
   useEffect(() => {
     try {
-      const canvas = document.createElement("canvas");
-      setHasGl(
-        !!(canvas.getContext("webgl2") || canvas.getContext("webgl"))
-      );
+      const c = document.createElement("canvas");
+      setHasGl(!!(c.getContext("webgl2") || c.getContext("webgl")));
     } catch {
       setHasGl(false);
     }
   }, []);
 
-  if (!url || !hasGl) return null;
+  if (!hasGl) return null;
 
   return (
     <div className="avatar-canvas" aria-hidden>
       <Canvas
         dpr={[1, 1.5]}
-        camera={{ position: [0, 0.4, 4.2], fov: 14, near: 0.1, far: 100 }}
+        camera={{ position: [0, 0.45, 1.85], fov: 14, near: 0.1, far: 100 }}
         gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
         onCreated={({ gl, camera }) => {
           gl.toneMappingExposure = 1.1;
-          camera.lookAt(0, 0.1, 0);
+          camera.lookAt(0, 0.42, 0);
         }}
       >
         <ambientLight intensity={0.7} />
@@ -79,8 +77,7 @@ const AvatarCanvas = () => {
         />
         <pointLight position={[0.5, 1, 2]} intensity={0.5} color="#f4a261" />
         <Suspense fallback={null}>
-          <AvatarModel url={buildOptimizedUrl(url)} />
-          <Environment preset="city" />
+          <AvatarModel url={MODEL_URL} />
         </Suspense>
       </Canvas>
     </div>

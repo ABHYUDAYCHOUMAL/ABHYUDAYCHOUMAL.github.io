@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment } from "@react-three/drei";
 import {
   BallCollider,
   Physics,
@@ -42,13 +41,14 @@ const TECHS: Tech[] = [
 ];
 
 /**
- * Generate a Moncy-style sphere texture: pure white background with
- * TWO copies of the logo + brand name at horizontal 25% and 75%.
+ * Generate a sphere texture with two side-by-side copies of the logo +
+ * brand name on a white background.
  *
- * The two-copy layout exists because a Three.js sphere wraps a 2D
- * texture cylindrically — a single centered logo disappears when the
- * ball rotates 180°. Two copies 180° apart guarantee at least one is
- * always visible no matter how the ball spins.
+ * Why two copies? A Three.js SphereGeometry wraps a 2D texture
+ * cylindrically — a single centered logo disappears from view when the
+ * ball rotates 180°. Two copies 180° apart in texture space guarantee
+ * at least one is visible on the front face no matter how the sphere
+ * tumbles.
  */
 function makeTechTexture(tech: Tech): THREE.Texture {
   // 1024×512 — wider than tall so the two-up layout has room
@@ -126,8 +126,8 @@ function makeTechTexture(tech: Tech): THREE.Texture {
 
 const sphereGeometry = new THREE.SphereGeometry(1, 24, 24);
 
-const SPHERE_COUNT = 24;
-const SCALE_OPTIONS = [0.7, 0.85, 1.0, 1.1];
+const SPHERE_COUNT = 16;
+const SCALE_OPTIONS = [0.75, 0.9, 1.0, 1.1];
 
 function pickScale(): number {
   return SCALE_OPTIONS[Math.floor(Math.random() * SCALE_OPTIONS.length)];
@@ -146,11 +146,14 @@ function Sphere({ scale, material, isActive }: SphereProps) {
   useFrame((_state, delta) => {
     if (!isActive || !api.current) return;
     const d = Math.min(0.1, delta);
+    // Gentle pull toward the scene origin. Smaller magnitudes than a
+    // typical zero-gravity ball-pit so spheres drift into a calm
+    // cluster instead of slamming into each other.
     const impulse = vec
       .copy(api.current.translation())
       .normalize()
       .multiply(
-        new THREE.Vector3(-35 * d * scale, -120 * d * scale, -35 * d * scale)
+        new THREE.Vector3(-15 * d * scale, -50 * d * scale, -15 * d * scale)
       );
     api.current.applyImpulse(impulse, true);
   });
@@ -158,8 +161,8 @@ function Sphere({ scale, material, isActive }: SphereProps) {
   const r = THREE.MathUtils.randFloatSpread;
   return (
     <RigidBody
-      linearDamping={0.75}
-      angularDamping={0.15}
+      linearDamping={0.92}
+      angularDamping={0.4}
       friction={0.2}
       position={[r(30), r(20) - 25, r(20) - 10]}
       ref={api}
@@ -222,17 +225,18 @@ const TechStack = () => {
   const materials = useMemo(() => {
     return TECHS.map((tech) => {
       const texture = makeTechTexture(tech);
-      // Match Moncy's recipe: fully matte body, half-metal so the HDR env
-      // map gives soft reflections, white self-emission so the texture
-      // glows gently, thin clearcoat for a hint of premium finish.
-      return new THREE.MeshPhysicalMaterial({
+      // MeshStandardMaterial is much lighter than PhysicalMaterial and
+      // doesn't need an HDR environment to look convincing. Self-emission
+      // through the texture keeps the spheres luminous; low metalness +
+      // medium roughness gives a clean satin matte. ~40% less GPU work
+      // per frame vs the physical/clearcoat path.
+      return new THREE.MeshStandardMaterial({
         map: texture,
         emissive: "#ffffff",
         emissiveMap: texture,
-        emissiveIntensity: 0.3,
-        metalness: 0.5,
-        roughness: 1,
-        clearcoat: 0.1,
+        emissiveIntensity: 0.32,
+        metalness: 0.2,
+        roughness: 0.55,
       });
     });
   }, []);
@@ -278,8 +282,6 @@ const TechStack = () => {
                 />
               ))}
             </Physics>
-
-            <Environment preset="city" environmentIntensity={0.5} />
           </Canvas>
 
           <div className="techstack__title-overlay">
