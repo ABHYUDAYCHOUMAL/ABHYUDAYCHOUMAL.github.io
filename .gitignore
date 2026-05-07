@@ -95,3 +95,10 @@ local-assets/
 *.blend
 *.psd
 *.ai
+
+# ============================================================
+# Personal / private notes — anything ending in `.private.md`
+# stays local-only. Use for cheatsheets, scratch ideas, secrets
+# you don't want on GitHub.
+# ============================================================
+*.private.md
