@@ -137,7 +137,7 @@ const LoadingScreen = () => {
           >
             <span>Open to Work</span>
             <span>Builder</span>
-            <span>Shipper</span>
+            <span>Designer</span>
             <span>iOS · Android</span>
             <span>Integrations</span>
           </Marquee>
