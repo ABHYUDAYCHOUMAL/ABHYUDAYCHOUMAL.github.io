@@ -203,6 +203,15 @@ p {
   display: block;
 }
 
+/* Each split word is its own inline-block so a wrap never lands inside a
+   word — `stacks` was breaking as "sta\ncks" when only chars+lines were
+   emitted. The `inline-block` + `nowrap` combo holds the word together
+   while still letting chars animate individually. */
+.split-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
 /* Hide reveal-targeted elements until their tween initializes. Prevents
    a flash of fully-rendered content before the animation starts. */
 [data-reveal]:not([data-reveal-hooked="1"]) {

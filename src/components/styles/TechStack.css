@@ -1,6 +1,6 @@
 .techstack {
   position: relative;
-  margin-block: clamp(4rem, 8vh, 7rem);
+  margin-block: clamp(3rem, 6vh, 5rem) clamp(1.5rem, 3vh, 2.5rem);
 }
 
 /* Full-bleed stage that escapes the page container */

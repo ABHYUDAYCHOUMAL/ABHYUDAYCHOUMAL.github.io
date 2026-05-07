@@ -29,7 +29,7 @@ const Landing = () => {
 
       <span className="landing__rail landing__rail--left mono" aria-hidden>
         <span className="landing__rail-dot" />
-        Architect · Builder · Shipper · Engineer
+        Architect · Designer · Developer · Engineer
       </span>
       <span className="landing__rail landing__rail--right mono" aria-hidden>
         Built in India · Shipped worldwide

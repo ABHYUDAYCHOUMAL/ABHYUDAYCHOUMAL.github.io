@@ -78,9 +78,12 @@ function reveal(el: HTMLElement) {
   switch (kind) {
     case "title": {
       // Chars rise from below the line with a blur clear.
+      // `words` keeps each word in its own inline-block so a long word
+      // (e.g. "stacks") never fragments across a line wrap.
       const split = new SplitText(el, {
-        type: "chars,lines",
+        type: "chars,words,lines",
         linesClass: "split-line",
+        wordsClass: "split-word",
       });
       const tween = gsap.fromTo(
         split.chars,

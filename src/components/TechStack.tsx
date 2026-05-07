@@ -14,30 +14,27 @@ type Tech = { name: string; color: string; slug: string };
 // `slug` is the simple-icons identifier used to fetch the SVG logo.
 // See https://simpleicons.org for the master list.
 const TECHS: Tech[] = [
-  // Languages
   { name: "Python", color: "#3776AB", slug: "python" },
-  { name: "TypeScript", color: "#3178C6", slug: "typescript" },
+  { name: "FastAPI", color: "#009688", slug: "fastapi" },
+  { name: "React", color: "#61DAFB", slug: "react" },
+  { name: "Node.js", color: "#339933", slug: "nodedotjs" },
+  { name: "MySQL", color: "#4479A1", slug: "mysql" },
+  { name: "Docker", color: "#2496ED", slug: "docker" },
   { name: "JavaScript", color: "#F7DF1E", slug: "javascript" },
+  { name: "TypeScript", color: "#3178C6", slug: "typescript" },
   { name: "Java", color: "#ED8B00", slug: "openjdk" },
   { name: "Swift", color: "#F05138", slug: "swift" },
-  { name: "Solidity", color: "#363636", slug: "solidity" },
-  // Frameworks
-  { name: "FastAPI", color: "#009688", slug: "fastapi" },
-  { name: "Node.js", color: "#339933", slug: "nodedotjs" },
-  { name: "React", color: "#61DAFB", slug: "react" },
+  { name: "Firebase", color: "#FFCA28", slug: "firebase" },
+  { name: "C++", color: "#00599C", slug: "cplusplus" },
+  { name: "Claude", color: "#DA7756", slug: "anthropic" },
+  { name: "PostgreSQL", color: "#336791", slug: "postgresql" },
   { name: "Django", color: "#092E20", slug: "django" },
-  { name: ".NET", color: "#512BD4", slug: "dotnet" },
-  // Data
   { name: "MongoDB", color: "#47A248", slug: "mongodb" },
-  { name: "MySQL", color: "#4479A1", slug: "mysql" },
   { name: "Redis", color: "#DC382D", slug: "redis" },
-  { name: "Neo4j", color: "#018BFF", slug: "neo4j" },
-  // Infrastructure
-  { name: "Docker", color: "#2496ED", slug: "docker" },
   { name: "Git", color: "#F05032", slug: "git" },
   { name: "AWS", color: "#FF9900", slug: "amazonwebservices" },
-  { name: "Firebase", color: "#FFCA28", slug: "firebase" },
-  { name: "Android", color: "#3DDC84", slug: "android" },
+  { name: "Solidity", color: "#363636", slug: "solidity" },
+  { name: "CUDA", color: "#76B900", slug: "nvidia" },
 ];
 
 /**
@@ -126,7 +123,7 @@ function makeTechTexture(tech: Tech): THREE.Texture {
 
 const sphereGeometry = new THREE.SphereGeometry(1, 24, 24);
 
-const SPHERE_COUNT = 16;
+const SPHERE_COUNT = 21;
 const SCALE_OPTIONS = [0.75, 0.9, 1.0, 1.1];
 
 function pickScale(): number {

@@ -3,10 +3,24 @@ import StatCounter from "./StatCounter";
 import "./styles/About.css";
 
 const STATS: { value: string; label: string }[] = [
-  { value: "13", label: "Phase restructure shipped (zero downtime)" },
-  { value: "18k+", label: "LOC monolith refactored" },
-  { value: "23 days", label: "From scope to live CEO demo" },
-  { value: "200+", label: "Students mentored at IIIT Raichur" },
+  {
+    value: "GS · CS",
+    label:
+      "Most loved Gen-Sec & Cult-Sec — kicked off cultural events + PR Council member",
+  },
+  {
+    value: "WTM",
+    label:
+      "Built the official college website as Website Team Master across multiple teams",
+  },
+  {
+    value: "200+",
+    label: "Mentored students across subjects as Teaching Assistant",
+  },
+  {
+    value: "School",
+    label: "96.17% in 10th · 96% in 12th ",
+  },
 ];
 
 const About = () => {
@@ -18,7 +32,7 @@ const About = () => {
             About
           </span>
           <h2 className="section-title" data-reveal="title">
-            A backend engineer who keeps shipping <em>across stacks.</em>
+            A full-stack engineer who keeps shipping <em>across stacks.</em>
           </h2>
         </header>
 
