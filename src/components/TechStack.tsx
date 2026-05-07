@@ -146,14 +146,13 @@ function Sphere({ scale, material, isActive }: SphereProps) {
   useFrame((_state, delta) => {
     if (!isActive || !api.current) return;
     const d = Math.min(0.1, delta);
-    // Gentle pull toward the scene origin. Smaller magnitudes than a
-    // typical zero-gravity ball-pit so spheres drift into a calm
-    // cluster instead of slamming into each other.
+    // Strong unit-vector pull toward origin. Recovery speed comes from
+    // the high magnitudes paired with the lower damping on the body.
     const impulse = vec
       .copy(api.current.translation())
       .normalize()
       .multiply(
-        new THREE.Vector3(-15 * d * scale, -50 * d * scale, -15 * d * scale)
+        new THREE.Vector3(-55 * d * scale, -160 * d * scale, -55 * d * scale)
       );
     api.current.applyImpulse(impulse, true);
   });
@@ -161,10 +160,12 @@ function Sphere({ scale, material, isActive }: SphereProps) {
   const r = THREE.MathUtils.randFloatSpread;
   return (
     <RigidBody
-      linearDamping={0.92}
-      angularDamping={0.4}
+      linearDamping={0.72}
+      angularDamping={0.18}
       friction={0.2}
-      position={[r(30), r(20) - 25, r(20) - 10]}
+      // Spawn pre-clustered around the camera center; the strong impulse
+      // and lighter damping make scattering and re-gathering feel snappy.
+      position={[r(7), r(5), r(7) - 4]}
       ref={api}
       colliders={false}
     >
@@ -254,6 +255,10 @@ const TechStack = () => {
     <section className="techstack" id="techstack" ref={sectionRef}>
       <div className="techstack__stage">
         <Canvas
+          // frameloop switches between continuous and on-demand rendering.
+          // When the section is out of view, the canvas stops rendering
+          // entirely and frees the main thread for scrolling.
+          frameloop={isActive ? "always" : "demand"}
           gl={{ alpha: true, stencil: false, antialias: false, powerPreference: "high-performance" }}
           camera={{ position: [0, 0, 20], fov: 32.5, near: 1, far: 100 }}
           dpr={[1, 1.5]}

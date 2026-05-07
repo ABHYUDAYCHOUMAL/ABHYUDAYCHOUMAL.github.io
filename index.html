@@ -38,15 +38,23 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <!-- Preload the hero 3D model so the network fetch overlaps with
-         the Three.js bundle, instead of waiting until the canvas mounts. -->
-    <link
-      rel="preload"
-      as="fetch"
-      href="/avatar.glb"
-      type="model/gltf-binary"
-      crossorigin
-    />
+    <!-- Take over scroll restoration BEFORE the browser tries to apply
+         the saved scroll position from the previous session. Doing this
+         here (synchronous, blocking) prevents the brief flash where the
+         page paints at a mid-scroll position before React mounts. -->
+    <script>
+      if ("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+      }
+      if (window.location.hash) {
+        history.replaceState(
+          null,
+          "",
+          window.location.pathname + window.location.search
+        );
+      }
+      window.scrollTo(0, 0);
+    </script>
   </head>
   <body>
     <div id="root"></div>

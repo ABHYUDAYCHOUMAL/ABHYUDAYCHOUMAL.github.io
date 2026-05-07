@@ -1,18 +1,33 @@
 import { useEffect, useState } from "react";
+import MarqueeImport from "react-fast-marquee";
 import { profile } from "../data/site";
 import "./styles/LoadingScreen.css";
 
+const Marquee = (MarqueeImport as unknown as { default?: typeof MarqueeImport })
+  .default ?? MarqueeImport;
+
 /**
- * Initial splash that hides the heavy first-paint cost (font swap,
- * lazy chunks, 3D init). It fades out in two phases: the progress fills
- * to 100, then the panel slides off the top.
+ * Premium splash that hides the heavy first-paint cost (font swap, lazy
+ * chunks, 3D init) and gives the page a deliberate entry moment.
  *
- * Auto-dismisses after `window.load` fires or a max timeout, whichever
- * comes first. Marks itself with `data-done="1"` so any consumers can
- * synchronize animations to this signal.
+ * Layers from back to front:
+ *   - Slowly pulsing radial glow that gives the dark stage warmth.
+ *   - Subtle dot grid that fades in from below and bleeds into the
+ *     edges, anchoring the composition.
+ *   - Two-row marquee: top row scrolls left at full size, bottom row
+ *     scrolls right at smaller size with the accent colour. Counter-
+ *     direction motion creates rhythm without competing for attention.
+ *   - Corner brackets (top-left, bottom-right) frame the stage.
+ *   - Centred pill with a thin progress fill behind the label.
+ *
+ * On click (or after auto-dismiss), the pill scales up massively to
+ * wipe the screen with the accent colour, then the panel slides off
+ * the top — a single continuous motion.
  */
 const LoadingScreen = () => {
   const [progress, setProgress] = useState(0);
+  const [reveal, setReveal] = useState(false);
+  const [clicked, setClicked] = useState(false);
   const [done, setDone] = useState(false);
 
   useEffect(() => {
@@ -28,17 +43,12 @@ const LoadingScreen = () => {
     } else {
       window.addEventListener("load", handleLoad, { once: true });
     }
-
-    // Even if `load` never fires (rare — usually means a third-party
-    // script is hung), force the screen off after this safety cap.
     const safety = window.setTimeout(() => {
       finishedAt = finishedAt || performance.now();
     }, 4500);
 
     const tick = (now: number) => {
       const elapsed = now - start;
-      // Fake-progress curve: rises quickly to 70, then asymptotes
-      // toward 95 until the page actually finishes loading.
       const fake = Math.min(
         95,
         70 * (1 - Math.exp(-elapsed / 800)) +
@@ -47,17 +57,14 @@ const LoadingScreen = () => {
       const real = finishedAt > 0
         ? Math.min(100, fake + ((now - finishedAt) / 400) * (100 - fake))
         : fake;
-
       setProgress(Math.round(real));
-
       if (real >= 100) {
-        setTimeout(() => setDone(true), 320);
+        setReveal(true);
         return;
       }
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
-
     return () => {
       cancelAnimationFrame(raf);
       window.clearTimeout(safety);
@@ -65,26 +72,109 @@ const LoadingScreen = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (!reveal) return;
+    const t = window.setTimeout(() => fire(), 1700);
+    return () => window.clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reveal]);
+
+  function fire() {
+    if (clicked) return;
+    setClicked(true);
+    window.setTimeout(() => setDone(true), 700);
+  }
+
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    e.currentTarget.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
+    e.currentTarget.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
+  };
+
   return (
     <div
-      className={"loading-screen" + (done ? " loading-screen--done" : "")}
+      className={
+        "loading-screen" +
+        (clicked ? " loading-screen--clicked" : "") +
+        (done ? " loading-screen--done" : "")
+      }
       role="status"
       aria-live="polite"
       aria-label="Loading"
-      data-done={done ? "1" : "0"}
     >
-      <div className="loading-screen__inner">
+      <div className="loading-screen__pulse" aria-hidden />
+      <div className="loading-screen__grid" aria-hidden />
+      <div className="loading-screen__brackets" aria-hidden>
+        <span /> <span /> <span /> <span />
+      </div>
+
+      <header className="loading-screen__top">
         <span className="loading-screen__mark">{profile.initials}</span>
-        <span className="loading-screen__name">{profile.name}</span>
-        <div className="loading-screen__bar" aria-hidden>
+        <div className="loading-screen__id">
+          <span className="loading-screen__name mono">
+            {profile.shortName.toLowerCase()}.dev
+          </span>
+          <span className="loading-screen__role mono">{profile.title}</span>
+        </div>
+      </header>
+
+      <div className="loading-screen__marquees" aria-hidden>
+        <div className="loading-screen__marquee loading-screen__marquee--top">
+          <Marquee speed={70} gradient={false} pauseOnHover={false}>
+            <span>Backend</span>
+            <span>Architecture</span>
+            <span>Distributed Systems</span>
+            <span>FastAPI</span>
+            <span>RAG · LLM</span>
+          </Marquee>
+        </div>
+        <div className="loading-screen__marquee loading-screen__marquee--bottom">
+          <Marquee
+            speed={45}
+            direction="right"
+            gradient={false}
+            pauseOnHover={false}
+          >
+            <span>Open to Work</span>
+            <span>Builder</span>
+            <span>Shipper</span>
+            <span>iOS · Android</span>
+            <span>Integrations</span>
+          </Marquee>
+        </div>
+      </div>
+
+      <div
+        className="loading-screen__wrap"
+        onMouseMove={onMove}
+        onClick={fire}
+      >
+        <span className="loading-screen__hover" aria-hidden />
+        <button
+          type="button"
+          className={
+            "loading-screen__pill" +
+            (reveal ? " loading-screen__pill--ready" : "")
+          }
+          aria-label={reveal ? "Enter the site" : `Loading ${progress}%`}
+        >
+          {/* Thin progress fill behind the label */}
           <span
             className="loading-screen__fill"
             style={{ width: `${progress}%` }}
+            aria-hidden
           />
-        </div>
-        <span className="loading-screen__pct mono">
-          {String(progress).padStart(3, "0")}
-        </span>
+          <span className="loading-screen__label">
+            <span className="loading-screen__loading">
+              <span className="loading-screen__dot" aria-hidden />
+              Loading
+              <em className="loading-screen__pct mono">{progress}%</em>
+            </span>
+            <span className="loading-screen__enter">
+              Enter <span aria-hidden>→</span>
+            </span>
+          </span>
+        </button>
       </div>
     </div>
   );

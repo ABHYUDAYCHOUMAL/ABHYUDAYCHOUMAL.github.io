@@ -1,24 +1,26 @@
-/* Cursor-anchored ambient light. Lives as a fixed overlay above the
-   page background but behind everything else. The radial gradient is
-   centered on (--glow-x, --glow-y) which the React component updates
-   each animation frame. */
-body.has-ambient-glow {
-  --glow-x: 50vw;
-  --glow-y: 30vh;
-}
-
-body.has-ambient-glow::after {
-  content: "";
+/* Cursor-anchored ambient light. A fixed-size pre-rendered gradient div
+   moved via GPU-accelerated translate3d so cursor tracking doesn't
+   trigger paint or layout work. */
+.ambient-glow {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 600px;
+  height: 600px;
   pointer-events: none;
   z-index: 1;
+  border-radius: 50%;
   background: radial-gradient(
-    600px circle at var(--glow-x) var(--glow-y),
-    rgba(244, 162, 97, 0.08),
-    rgba(125, 211, 252, 0.04) 25%,
-    transparent 60%
+    circle,
+    rgba(244, 162, 97, 0.10),
+    rgba(244, 162, 97, 0.04) 30%,
+    transparent 65%
   );
-  mix-blend-mode: screen;
-  transition: opacity 0.4s var(--easing);
+  will-change: transform;
+}
+
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .ambient-glow {
+    display: none;
+  }
 }

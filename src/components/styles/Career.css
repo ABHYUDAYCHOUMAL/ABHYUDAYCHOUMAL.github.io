@@ -19,18 +19,20 @@
 
 .career__timeline-line {
   position: absolute;
-  left: 0.55rem;
+  left: 0.5rem;
   top: 0.6rem;
   bottom: 0.6rem;
-  width: 1px;
+  width: 2px;
+  border-radius: 2px;
   background: linear-gradient(
     to bottom,
     transparent,
-    var(--border-strong) 8%,
-    var(--accent-soft) 50%,
-    var(--border-strong) 92%,
+    var(--accent) 8%,
+    var(--accent-strong) 50%,
+    var(--accent) 92%,
     transparent
   );
+  box-shadow: 0 0 12px rgba(244, 162, 97, 0.35);
   transform-origin: top;
 }
 

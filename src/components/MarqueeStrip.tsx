@@ -1,5 +1,11 @@
-import Marquee from "react-fast-marquee";
+import MarqueeImport from "react-fast-marquee";
 import "./styles/MarqueeStrip.css";
+
+// react-fast-marquee ships as CJS with `exports.default = Marquee`. Some
+// bundlers expose that as `{ default: Component }` instead of unwrapping
+// the default automatically, so unwrap defensively.
+const Marquee = (MarqueeImport as unknown as { default?: typeof MarqueeImport })
+  .default ?? MarqueeImport;
 
 type Props = {
   items: string[];

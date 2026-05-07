@@ -4,13 +4,11 @@ import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import "./styles/AvatarCanvas.css";
 
-// Point drei's GLTF loader at the Draco WASM decoder we ship in /public/draco
+// Drei's GLTF loader uses the Draco WASM decoder shipped in /public/draco
 // so it can transparently load Draco-compressed GLBs.
 useGLTF.setDecoderPath("/draco/");
 
 const MODEL_URL = "/avatar.glb";
-
-useGLTF.preload(MODEL_URL);
 
 function AvatarModel({ url }: { url: string }) {
   const { scene } = useGLTF(url);
@@ -44,7 +42,9 @@ function AvatarModel({ url }: { url: string }) {
 }
 
 const AvatarCanvas = () => {
+  const wrapRef = useRef<HTMLDivElement>(null);
   const [hasGl, setHasGl] = useState(true);
+  const [inView, setInView] = useState(true);
 
   useEffect(() => {
     try {
@@ -55,11 +55,26 @@ const AvatarCanvas = () => {
     }
   }, []);
 
+  // Pause rendering once the user has scrolled past the hero. Saves a
+  // continuous WebGL render loop that would otherwise keep ticking
+  // through every other section.
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.05 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   if (!hasGl) return null;
 
   return (
-    <div className="avatar-canvas" aria-hidden>
+    <div className="avatar-canvas" aria-hidden ref={wrapRef}>
       <Canvas
+        frameloop={inView ? "always" : "demand"}
         dpr={[1, 1.5]}
         camera={{ position: [0, 0.45, 1.85], fov: 14, near: 0.1, far: 100 }}
         gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}

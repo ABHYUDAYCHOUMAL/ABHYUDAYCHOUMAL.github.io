@@ -60,8 +60,11 @@ const SmoothScroll = ({ children }: PropsWithChildren) => {
       smoother = ScrollSmoother.create({
         wrapper: wrapperRef.current,
         content: contentRef.current,
-        smooth: 1.7,
-        speed: 1.7,
+        // Lower inertia, higher speed multiplier — page responds to wheel
+        // ticks fast (less perceived weight) while keeping a soft glide
+        // instead of a hard pixel-stepped scroll.
+        smooth: 1.1,
+        speed: 1.6,
         effects: true,
         smoothTouch: false,
         normalizeScroll: true,
@@ -76,26 +79,25 @@ const SmoothScroll = ({ children }: PropsWithChildren) => {
 
     initReveal();
 
-    // When lazy chunks land or fonts swap in, the document height
-    // changes — refresh ScrollTriggers so they stay aligned.
-    const observer = new ResizeObserver(() => {
-      ScrollTrigger.refresh();
-    });
-    observer.observe(contentRef.current);
-
-    // Re-scan for newly inserted [data-reveal] nodes (lazy sections).
-    const mutation = new MutationObserver(() => {
+    // Re-scan for late-mounted [data-reveal] nodes (lazy chunks like
+    // TechStack) ONCE after a short delay. We deliberately don't use a
+    // MutationObserver here — ScrollTrigger.pin modifies the DOM, which
+    // would re-fire the observer, which would refresh pins, which would
+    // modify DOM again. That feedback loop freezes the main thread.
+    const lateScan = window.setTimeout(() => {
       initReveal();
       refreshReveal();
-    });
-    mutation.observe(contentRef.current, {
-      childList: true,
-      subtree: true,
-    });
+    }, 1500);
+
+    // Refresh ScrollTriggers on window load (catches font swaps + image
+    // dimension settles) and on resize. ScrollTrigger has its own
+    // built-in resize handling, so we just add a coarse fallback.
+    const onLoad = () => ScrollTrigger.refresh();
+    window.addEventListener("load", onLoad, { once: true });
 
     return () => {
-      observer.disconnect();
-      mutation.disconnect();
+      window.clearTimeout(lateScan);
+      window.removeEventListener("load", onLoad);
       destroyReveal();
       smoother?.kill();
     };

@@ -55,14 +55,27 @@
   pointer-events: none;
 }
 
-.bucket:hover {
+.bucket:hover,
+.bucket--active {
   transform: translateY(-4px);
   border-color: var(--border-strong);
   box-shadow: var(--shadow-2);
 }
 
-.bucket:hover::before {
+.bucket:hover::before,
+.bucket--active::before {
   opacity: 1;
+}
+
+/* When one tap-card is active, fade the others so attention pulls
+   toward the chosen card. */
+.bucket--muted {
+  opacity: 0.45;
+  transform: scale(0.98);
+}
+
+.bucket--tap {
+  cursor: pointer;
 }
 
 .bucket__index {

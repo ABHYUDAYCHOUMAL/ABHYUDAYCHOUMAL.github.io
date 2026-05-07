@@ -3,10 +3,10 @@ import StatCounter from "./StatCounter";
 import "./styles/About.css";
 
 const STATS: { value: string; label: string }[] = [
-  { value: "5+", label: "Production systems shipped" },
+  { value: "13", label: "Phase restructure shipped (zero downtime)" },
   { value: "18k+", label: "LOC monolith refactored" },
-  { value: "10k+", label: "iOS users served" },
-  { value: "450%", label: "Faster than scoped" },
+  { value: "23 days", label: "From scope to live CEO demo" },
+  { value: "200+", label: "Students mentored at IIIT Raichur" },
 ];
 
 const About = () => {

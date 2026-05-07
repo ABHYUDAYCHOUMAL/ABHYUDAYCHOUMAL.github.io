@@ -1,6 +1,5 @@
-/* Hide the OS cursor only when the custom one is mounted (i.e. not on
-   touch devices and not under prefers-reduced-motion). Inputs and
-   contenteditable retain their native carets so typing still feels right. */
+/* Hide the OS cursor when the custom one is mounted. Inputs keep
+   their text caret so typing still feels right. */
 body.has-custom-cursor,
 body.has-custom-cursor * {
   cursor: none;
@@ -14,8 +13,7 @@ body.has-custom-cursor select {
 }
 
 body.has-custom-cursor input[type="submit"],
-body.has-custom-cursor input[type="button"],
-body.has-custom-cursor select {
+body.has-custom-cursor input[type="button"] {
   cursor: none;
 }
 
@@ -25,51 +23,89 @@ body.has-custom-cursor select {
   left: 0;
   pointer-events: none;
   z-index: 9999;
+  /* Difference blend keeps the cursor visible on any background.
+     Light surfaces show it dark, dark surfaces show it light. */
+  mix-blend-mode: difference;
   will-change: transform;
+}
+
+/* ============================================================
+   Inner dot — precise pointer position
+   ============================================================ */
+.cursor__dot {
+  width: 5px;
+  height: 5px;
+  background: #ffffff;
+  border-radius: 50%;
   transition: opacity 0.25s var(--easing);
 }
 
-.cursor__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-  mix-blend-mode: difference;
+.cursor__dot--hide {
+  opacity: 0;
 }
 
+/* ============================================================
+   Outer ring — trails, morphs into different states
+   ============================================================ */
 .cursor__ring {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid #ffffff;
+  background: transparent;
   border-radius: 50%;
-  border: 1.5px solid var(--accent);
+  display: grid;
+  place-items: center;
   transition:
-    width 0.35s var(--easing),
-    height 0.35s var(--easing),
-    opacity 0.25s var(--easing),
-    background 0.3s var(--easing),
-    border-color 0.3s var(--easing);
+    width 0.32s var(--easing),
+    height 0.32s var(--easing),
+    background-color 0.32s var(--easing),
+    border-color 0.32s var(--easing),
+    border-width 0.32s var(--easing),
+    opacity 0.25s var(--easing);
 }
 
+/* Hover — translucent fill, no border. The mix-blend handles colour. */
 .cursor__ring--hover {
   width: 56px;
   height: 56px;
-  background: var(--accent-soft);
-  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.25);
+  border-color: transparent;
+}
+
+/* View — bigger still, with a "View" label visible inside. */
+.cursor__ring--view {
+  width: 92px;
+  height: 92px;
+  background: rgba(255, 255, 255, 0.28);
+  border-color: transparent;
 }
 
 .cursor__ring--hide {
   opacity: 0;
+  transform: scale(0.4);
 }
 
-/* On any pointer device that doesn't show a precise cursor, hide the
-   custom cursor entirely so it never gets stuck. */
-@media (hover: none), (pointer: coarse) {
-  .cursor {
-    display: none;
-  }
+.cursor__label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #000000;
+  /* Difference blend on the parent inverts black to white over dark
+     backgrounds, keeping the label legible everywhere. */
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity 0.3s var(--easing),
+    transform 0.3s var(--easing);
 }
 
-@media (prefers-reduced-motion: reduce) {
+.cursor__ring--view .cursor__label {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
   .cursor {
     display: none;
   }

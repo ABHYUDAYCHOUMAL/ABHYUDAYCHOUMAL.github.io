@@ -63,12 +63,16 @@ function reveal(el: HTMLElement) {
   const start = el.getAttribute("data-reveal-start") ?? "top 85%";
   const delay = parseFloat(el.getAttribute("data-reveal-delay") ?? "0") || 0;
 
-  // Reversible scroll trigger: forward on enter, reverse on leaving back
-  // upward. Lets the user "rewind" any reveal by scrolling.
+  // Symmetric scroll trigger — animations play in BOTH directions.
+  //   onEnter      → play  (scrolling down, element enters from below)
+  //   onLeave      → reverse (scrolling down, element leaves up top)
+  //   onEnterBack  → play  (scrolling up, element re-enters from above)
+  //   onLeaveBack  → reverse (scrolling up, element exits down bottom)
+  // The user sees content animate in/out as they scroll either direction.
   const trigger = {
     trigger: el,
     start,
-    toggleActions: "play none none reverse" as const,
+    toggleActions: "play reverse play reverse" as const,
   };
 
   switch (kind) {

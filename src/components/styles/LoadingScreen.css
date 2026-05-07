@@ -2,12 +2,14 @@
   position: fixed;
   inset: 0;
   z-index: 9990;
-  background: var(--bg-0);
+  background: var(--bg-1);
   display: grid;
   place-items: center;
+  overflow: hidden;
+  isolation: isolate;
   transition:
-    transform 0.9s cubic-bezier(0.7, 0, 0.2, 1),
-    opacity 0.5s var(--easing);
+    transform 0.75s cubic-bezier(0.7, 0, 0.2, 1) 0.35s,
+    opacity 0.5s var(--easing) 0.45s;
 }
 
 .loading-screen--done {
@@ -16,49 +18,310 @@
   pointer-events: none;
 }
 
-.loading-screen__inner {
+/* ============================================================
+   Background layer 1 — slowly pulsing radial glow
+   ============================================================ */
+.loading-screen__pulse {
+  position: absolute;
+  inset: -20% -10%;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(244, 162, 97, 0.18), transparent 50%),
+    radial-gradient(circle at 75% 65%, rgba(125, 211, 252, 0.10), transparent 55%),
+    radial-gradient(circle at 50% 50%, rgba(244, 162, 97, 0.05), transparent 70%);
+  filter: blur(20px);
+  animation: ls-pulse 7s ease-in-out infinite;
+  opacity: 0.85;
+}
+
+@keyframes ls-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50%      { transform: scale(1.06); opacity: 1; }
+}
+
+/* ============================================================
+   Background layer 2 — subtle dot grid
+   ============================================================ */
+.loading-screen__grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-position: 0 0;
+  mask-image: radial-gradient(
+    ellipse 80% 70% at 50% 50%,
+    #000 30%,
+    transparent 90%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse 80% 70% at 50% 50%,
+    #000 30%,
+    transparent 90%
+  );
+  animation: ls-fade-in 1s var(--easing) 0.1s backwards;
+}
+
+@keyframes ls-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ============================================================
+   Corner brackets
+   ============================================================ */
+.loading-screen__brackets {
+  position: absolute;
+  inset: clamp(1.5rem, 3vw, 2.5rem);
+  pointer-events: none;
+  z-index: 4;
+}
+
+.loading-screen__brackets span {
+  position: absolute;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-color: var(--border-strong);
+  border-style: solid;
+  border-width: 0;
+  animation: ls-fade-in 1.2s var(--easing) 0.4s backwards;
+}
+
+.loading-screen__brackets span:nth-child(1) {
+  top: 0;
+  left: 0;
+  border-top-width: 1px;
+  border-left-width: 1px;
+}
+.loading-screen__brackets span:nth-child(2) {
+  top: 0;
+  right: 0;
+  border-top-width: 1px;
+  border-right-width: 1px;
+}
+.loading-screen__brackets span:nth-child(3) {
+  bottom: 0;
+  left: 0;
+  border-bottom-width: 1px;
+  border-left-width: 1px;
+}
+.loading-screen__brackets span:nth-child(4) {
+  bottom: 0;
+  right: 0;
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+}
+
+/* ============================================================
+   Top — mark + name + role line
+   ============================================================ */
+.loading-screen__top {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  width: min(360px, 80vw);
+  gap: 0.85rem;
+  padding: clamp(1.5rem, 3vw, 2.2rem);
+  z-index: 5;
+  animation: ls-slide-down 0.8s var(--easing) 0.2s backwards;
+}
+
+@keyframes ls-slide-down {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .loading-screen__mark {
   display: grid;
   place-items: center;
-  width: 3.4rem;
-  height: 3.4rem;
-  border-radius: var(--radius-md);
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: var(--radius-sm);
   background: var(--accent);
   color: var(--bg-0);
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.3rem;
+  font-size: 0.95rem;
   letter-spacing: 0;
   box-shadow: var(--shadow-glow);
-  margin-bottom: 0.6rem;
+}
+
+.loading-screen__id {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  line-height: 1.2;
 }
 
 .loading-screen__name {
-  font-family: var(--font-display);
-  font-size: 1.1rem;
-  font-weight: 500;
+  font-size: 0.95rem;
   color: var(--text-1);
+  letter-spacing: 0.04em;
 }
 
-.loading-screen__bar {
-  width: 100%;
-  height: 2px;
-  background: var(--bg-2);
+.loading-screen__role {
+  font-size: 0.68rem;
+  color: var(--text-3);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   Two-row marquee — top large white, bottom small accent
+   ============================================================ */
+.loading-screen__marquees {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.loading-screen__marquee--top span {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  padding-inline: clamp(2rem, 4vw, 3.5rem);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2.6rem, 8vw, 7rem);
+  line-height: 1;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+  color: var(--text-1);
+  white-space: nowrap;
+  animation: ls-fade-in 1s var(--easing) 0.3s backwards;
+}
+
+.loading-screen__marquee--top span::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 16px var(--accent-soft);
+}
+
+.loading-screen__marquee--bottom span {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  padding-inline: clamp(1.5rem, 3vw, 2.4rem);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1rem, 2vw, 1.6rem);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+  white-space: nowrap;
+  animation: ls-fade-in 1s var(--easing) 0.5s backwards;
+}
+
+.loading-screen__marquee--bottom span::before {
+  content: "—";
+  margin-right: 1.5rem;
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   Pill wrapper — holds the click area and blurred mouse-glow ball
+   ============================================================ */
+.loading-screen__wrap {
+  position: relative;
+  z-index: 3;
+  padding: 6px;
   border-radius: 999px;
   overflow: hidden;
-  margin-top: 0.4rem;
+  cursor: pointer;
+  transition:
+    transform 0.85s cubic-bezier(0.33, 0.11, 1, 0.72),
+    box-shadow 0.4s var(--easing);
+  box-shadow:
+    0 14px 32px -10px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  animation: ls-rise 1s var(--easing) 0.35s backwards;
 }
 
+@keyframes ls-rise {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.loading-screen--clicked .loading-screen__wrap {
+  transform: scale(45);
+  box-shadow: none;
+}
+
+.loading-screen__hover {
+  position: absolute;
+  top: var(--mouse-y, 50%);
+  left: var(--mouse-x, 50%);
+  width: 220px;
+  height: 110px;
+  border-radius: 50%;
+  background: var(--accent);
+  filter: blur(38px);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.35s var(--easing);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.loading-screen__wrap:hover .loading-screen__hover {
+  opacity: 0.9;
+}
+
+.loading-screen--clicked .loading-screen__hover {
+  opacity: 0;
+}
+
+/* ============================================================
+   The pill itself
+   ============================================================ */
+.loading-screen__pill {
+  position: relative;
+  z-index: 2;
+  padding: clamp(1rem, 1.4vw, 1.3rem) clamp(2.2rem, 3.5vw, 3.4rem);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 50%),
+    var(--bg-0);
+  border: 1px solid var(--border);
+  color: var(--text-1);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(0.95rem, 1.2vw, 1.15rem);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  min-width: 240px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  transition: border-color 0.3s var(--easing);
+}
+
+.loading-screen__pill--ready {
+  border-color: var(--accent);
+}
+
+/* Thin progress fill — behind the label, anchored bottom */
 .loading-screen__fill {
-  display: block;
-  height: 100%;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
   background: linear-gradient(
     90deg,
     var(--accent),
@@ -66,20 +329,105 @@
   );
   transition: width 0.18s linear;
   box-shadow: 0 0 14px var(--accent-soft);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.loading-screen__label {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 100%;
+}
+
+.loading-screen__loading,
+.loading-screen__enter {
+  grid-area: 1 / 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  transition:
+    opacity 0.35s var(--easing),
+    transform 0.35s var(--easing);
+}
+
+/* Pulsing dot before the loading text */
+.loading-screen__dot {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-right: 0.2rem;
+  animation: ls-dot-pulse 1.2s ease-in-out infinite;
+  box-shadow: 0 0 0 0 var(--accent-soft);
+}
+
+@keyframes ls-dot-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(244, 162, 97, 0.55);
+  }
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 6px rgba(244, 162, 97, 0);
+  }
 }
 
 .loading-screen__pct {
-  font-size: 0.75rem;
-  letter-spacing: 0.16em;
-  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  margin-left: 0.1rem;
+  font-style: normal;
+  min-width: 3.5ch;
+  text-align: right;
+}
+
+.loading-screen__enter {
+  opacity: 0;
+  transform: translateY(8px);
+  color: var(--accent);
+  font-size: 1.15em;
+}
+
+.loading-screen__pill--ready .loading-screen__loading {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.loading-screen__pill--ready .loading-screen__enter {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.loading-screen__pill--ready .loading-screen__dot {
+  animation: none;
+  opacity: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .loading-screen {
-    /* Skip the slide animation; just fade. */
+  .loading-screen,
+  .loading-screen__wrap,
+  .loading-screen__pill,
+  .loading-screen__pulse,
+  .loading-screen__top,
+  .loading-screen__marquee--top span,
+  .loading-screen__marquee--bottom span,
+  .loading-screen__brackets span,
+  .loading-screen__grid {
+    animation: none;
     transition: opacity 0.3s linear;
   }
   .loading-screen--done {
     transform: none;
+  }
+  .loading-screen--clicked .loading-screen__wrap {
+    transform: none;
+  }
+  .loading-screen__dot {
+    animation: none;
   }
 }

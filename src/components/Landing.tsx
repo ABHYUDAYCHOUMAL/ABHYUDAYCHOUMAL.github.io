@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { profile, bio } from "../data/site";
 import CanvasErrorBoundary from "./CanvasErrorBoundary";
 import "./styles/Landing.css";
@@ -7,7 +7,6 @@ const AvatarCanvas = lazy(() => import("./AvatarCanvas"));
 
 const Landing = () => {
   const [wordIndex, setWordIndex] = useState(0);
-  const portraitRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -16,52 +15,32 @@ const Landing = () => {
     return () => window.clearInterval(id);
   }, []);
 
-  // Mouse-driven tilt on the portrait container — adds 3D depth to the
-  // 2D halo behind the avatar canvas. Direct DOM transforms (no React
-  // re-renders), capped to a tasteful angle so it never feels gimmicky.
-  useEffect(() => {
-    const el = portraitRef.current;
-    if (!el) return;
-    if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    const target = { rx: 0, ry: 0 };
-    const current = { rx: 0, ry: 0 };
-    let raf = 0;
-
-    const onMove = (e: PointerEvent) => {
-      const rect = el.getBoundingClientRect();
-      const dx = (e.clientX - (rect.left + rect.width / 2)) / rect.width;
-      const dy = (e.clientY - (rect.top + rect.height / 2)) / rect.height;
-      target.ry = dx * 6;
-      target.rx = -dy * 4;
-    };
-    const onLeave = () => {
-      target.rx = 0;
-      target.ry = 0;
-    };
-
-    const tick = () => {
-      current.rx += (target.rx - current.rx) * 0.08;
-      current.ry += (target.ry - current.ry) * 0.08;
-      el.style.transform = `perspective(1100px) rotateX(${current.rx}deg) rotateY(${current.ry}deg)`;
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-
-    window.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerleave", onLeave);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerleave", onLeave);
-    };
-  }, []);
-
   return (
     <section className="landing landing--with-avatar" id="top">
+      {/* Decorative frame: corner brackets, side rail labels, scroll cue.
+          These sit OUTSIDE the content container so they hug the viewport
+          edges, not the centred 1240px column. */}
+      <div className="landing__frame" aria-hidden>
+        <span className="landing__bracket landing__bracket--tl" />
+        <span className="landing__bracket landing__bracket--tr" />
+        <span className="landing__bracket landing__bracket--bl" />
+        <span className="landing__bracket landing__bracket--br" />
+      </div>
+
+      <span className="landing__rail landing__rail--left mono" aria-hidden>
+        <span className="landing__rail-dot" />
+        Architect · Builder · Shipper · Engineer
+      </span>
+      <span className="landing__rail landing__rail--right mono" aria-hidden>
+        Built in India · Shipped worldwide
+      </span>
+
       <div className="container landing__inner">
         <div className="landing__copy">
+          <span className="landing__status mono">
+            <span className="landing__status-dot" />
+            Available for new work
+          </span>
           <p className="eyebrow">{profile.title}</p>
 
           <h1 className="landing__name">
@@ -105,7 +84,7 @@ const Landing = () => {
           </div>
         </div>
 
-        <div className="landing__portrait" ref={portraitRef}>
+        <div className="landing__portrait">
           <CanvasErrorBoundary>
             <Suspense fallback={null}>
               <AvatarCanvas />
@@ -113,6 +92,11 @@ const Landing = () => {
           </CanvasErrorBoundary>
         </div>
       </div>
+
+      <a className="landing__scroll mono" href="#about" aria-label="Scroll down">
+        <span>Scroll</span>
+        <span className="landing__scroll-line" aria-hidden />
+      </a>
 
       <div className="landing__grid" aria-hidden />
       <div className="landing__glow landing__glow--a" aria-hidden />
