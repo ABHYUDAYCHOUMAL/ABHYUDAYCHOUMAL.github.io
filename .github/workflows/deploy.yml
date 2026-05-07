@@ -1,0 +1,67 @@
+name: Deploy to GitHub Pages
+
+# Run on every push to redesign + allow manual triggering from the
+# Actions tab. When the site stabilises and `redesign` becomes the
+# default branch (or merges into main), update the branch list here.
+on:
+  push:
+    branches: [redesign]
+  workflow_dispatch:
+
+# Permissions required for the GitHub Pages artifact deploy flow.
+# `id-token: write` is needed for the Pages OIDC handshake.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# If a new push lands while a deploy is mid-flight, queue rather than
+# cancel — we don't want to drop a deploy that's already publishing.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production bundle
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        # Bundles `dist/` into the artifact format the deploy step
+        # expects. The artifact is a single tarball Pages serves
+        # directly — no branch commits, no history pollution.
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    name: Deploy to Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

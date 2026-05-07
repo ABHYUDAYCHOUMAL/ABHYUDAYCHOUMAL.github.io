@@ -1,4 +1,32 @@
-# Logs
+# ============================================================
+# Dependencies — recreated by `npm ci`, never committed.
+# ============================================================
+node_modules
+.pnp
+.pnp.js
+
+# ============================================================
+# Build outputs — produced by `npm run build` or the deploy
+# workflow. Never committed; the workflow builds fresh in CI.
+# ============================================================
+dist
+dist-ssr
+build
+out
+.cache
+.next
+.parcel-cache
+.vite
+
+# ============================================================
+# TypeScript incremental build artifacts
+# ============================================================
+*.tsbuildinfo
+.tsbuildinfo
+
+# ============================================================
+# Logs from any package manager / runtime
+# ============================================================
 logs
 *.log
 npm-debug.log*
@@ -7,23 +35,63 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# ============================================================
+# Test / coverage output
+# ============================================================
+coverage
+.nyc_output
 
-# Local env (real secrets); committed defaults are .env.development / .env.production
+# ============================================================
+# Local environment overrides — kept off-repo so machine-specific
+# values (real keys, debug toggles) never leak. Committed defaults
+# live in .env.development / .env.production.
+# ============================================================
 .env
 .env.local
 .env.*.local
+*.local
 
-# Editor directories and files
+# ============================================================
+# Editor / IDE state
+# ============================================================
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
 .idea
-.DS_Store
+.history
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*.swp
+*.swo
+
+# ============================================================
+# OS-generated junk
+# ============================================================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ============================================================
+# Scratch / temporary files
+# ============================================================
+*.tmp
+*.temp
+*.bak
+*.orig
+~$*
+
+# ============================================================
+# Asset source files we keep locally but don't ship.
+# Compiled /public/avatar.glb is shipped; raw FBX exports etc.
+# stay off-repo. Drop new ones into a /local-assets/ folder.
+# ============================================================
+local-assets/
+*.fbx
+*.blend
+*.psd
+*.ai
